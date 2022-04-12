@@ -1,5 +1,7 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
+import Modal from './Modal/Index';
 import './MultiSearch.css'
 
 let currentTimeOut;
@@ -11,11 +13,21 @@ function MultiSearch() {
     const [searchByUsername, setSearchByUsername] = useState("");
     const [searchByPhone, setSearchByPhone] = useState("");
     const [searchByEmail, setSearchByEmail] = useState("");
+    const [selectedRowValue, setSelectedRowValue] = useState('');
+
+    // modal states
+    const [showModal, setShowModal] = useState(false);
+
+    // update states, lifting up states
+    const [editedName, setEditedName] = useState('');
+    const [editedUserName, setEditedUserName] = useState('');
+    const [editedPhone, setEditedPhone] = useState('');
+    const [editedEmail, setEditedEmail] = useState('');
 
     const fetchData = async () => {
         await axios.get('https://jsonplaceholder.typicode.com/users')
         .then((response) => {
-            console.log("fetch called")
+            // console.log("fetch called")
             setUsers(response.data);
         }).catch((err) => {
             console.log(err);
@@ -47,9 +59,23 @@ function MultiSearch() {
     }
 
     useEffect(() => {
-        console.log("making search call!");
+        // console.log("making search call!");
     }, [searchByName])
+    
 
+    const getSelectedRowValue = (user) => {
+        setShowModal(true);
+        setSelectedRowValue(user)
+    }
+
+    const submitHandler = (e) => {
+        e.preventDefault()
+        setShowModal(false);
+        selectedRowValue.name = editedName;
+        selectedRowValue.username = editedUserName;
+        selectedRowValue.phone = editedPhone;
+        selectedRowValue.email = editedEmail;
+    }
 
     return (
         <div className='container'>
@@ -105,7 +131,7 @@ function MultiSearch() {
                     {
                         filteredData?.map((user) => {
                             return (
-                                <tr key={user.id}>
+                                <tr onClick={()=> getSelectedRowValue(user)} key={user.id}>
                                     <td className='border-right'>{user.name}</td>
                                     <td className='border-right'>{user.username}</td>
                                     <td className='border-right'>{user.phone}</td>
@@ -116,6 +142,15 @@ function MultiSearch() {
                     }
                 </tbody>
             </table>
+            <Modal 
+                selectedRowValue={selectedRowValue} 
+                show={showModal}
+                onSubmit={submitHandler}
+                setEditedName={setEditedName}
+                setEditedUserName={setEditedUserName}
+                setEditedPhone={setEditedPhone}
+                setEditedEmail={setEditedEmail}
+                />
         </div>
     )
 }
