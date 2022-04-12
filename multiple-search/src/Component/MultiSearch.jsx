@@ -2,9 +2,12 @@ import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import './MultiSearch.css'
 
+let currentTimeOut;
+
 function MultiSearch() {
     const [users, setUsers] = useState([]);
     const [searchByName, setSearchByName] = useState("");
+    const [inputValueName, setInputValueName] = useState("");
     const [searchByUsername, setSearchByUsername] = useState("");
     const [searchByPhone, setSearchByPhone] = useState("");
     const [searchByEmail, setSearchByEmail] = useState("");
@@ -30,6 +33,23 @@ function MultiSearch() {
         (!searchByEmail.toLowerCase() || user.email.toLowerCase().indexOf(searchByEmail) !== -1)
     );
 
+    const debounceOnChange = (event) => {
+        const inputValue = event.target.value;
+        setInputValueName(inputValue);
+
+        if(currentTimeOut){
+            clearTimeout(currentTimeOut);
+        }
+
+        currentTimeOut = setTimeout(() => {
+            setSearchByName(inputValue.toLowerCase());
+        }, 2000)
+    }
+
+    useEffect(() => {
+        console.log("making search call!");
+    }, [searchByName])
+
 
     return (
         <div className='container'>
@@ -42,8 +62,8 @@ function MultiSearch() {
                             <input 
                                 type="text"
                                 name='name'
-                                value={searchByName}
-                                onChange={(e) => setSearchByName((e.target.value).toLowerCase())}
+                                value={inputValueName}
+                                onChange={debounceOnChange}
                                 placeholder='Search by Name'/>
                             </span>
                         </th>
