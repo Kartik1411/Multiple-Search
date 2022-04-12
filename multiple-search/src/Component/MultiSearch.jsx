@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import './MultiSearch.css'
 
 function MultiSearch() {
-    const [users, setUsers] = useState();
+    const [users, setUsers] = useState([]);
     const [searchByName, setSearchByName] = useState("");
     const [searchByUsername, setSearchByUsername] = useState("");
     const [searchByPhone, setSearchByPhone] = useState("");
     const [searchByEmail, setSearchByEmail] = useState("");
 
-    const fetchedData = async () => {
+    const fetchData = async () => {
         await axios.get('https://jsonplaceholder.typicode.com/users')
         .then((response) => {
+            console.log("fetch called")
             setUsers(response.data);
         }).catch((err) => {
             console.log(err);
@@ -19,14 +20,14 @@ function MultiSearch() {
     }
 
     useEffect(() => {
-        fetchedData();
-    },[]);
+        fetchData();
+    },[])
 
     const filteredData = users?.filter((user) =>
-        (user.name.indexOf(searchByName) !== -1) &&
-        (user.username.indexOf(searchByUsername) !== -1) &&
-        (user.phone.indexOf(searchByPhone) !== -1) && 
-        (user.email.indexOf(searchByEmail) !== -1)
+        (!searchByName.toLowerCase() || user.name.toLowerCase().indexOf(searchByName) !== -1) &&
+        (!searchByUsername.toLowerCase() || user.username.toLowerCase().indexOf(searchByUsername) !== -1) &&
+        (!searchByPhone.toLowerCase() || user.phone.toLowerCase().indexOf(searchByPhone) !== -1) && 
+        (!searchByEmail.toLowerCase() || user.email.toLowerCase().indexOf(searchByEmail) !== -1)
     );
 
 
@@ -42,7 +43,7 @@ function MultiSearch() {
                                 type="text"
                                 name='name'
                                 value={searchByName}
-                                onChange={(e) => setSearchByName(e.target.value)}
+                                onChange={(e) => setSearchByName((e.target.value).toLowerCase())}
                                 placeholder='Search by Name'/>
                             </span>
                         </th>
@@ -53,7 +54,7 @@ function MultiSearch() {
                                     type="text"
                                     name='username'
                                     value={searchByUsername}
-                                    onChange={(e) => setSearchByUsername(e.target.value)}
+                                    onChange={(e) => setSearchByUsername((e.target.value).toLowerCase())}
                                     placeholder='Search by Username'/>
                             </span>
                         </th>
@@ -64,7 +65,7 @@ function MultiSearch() {
                                     type="text"
                                     name='phone'
                                     value={searchByPhone}
-                                    onChange={(e) => setSearchByPhone(e.target.value)}
+                                    onChange={(e) => setSearchByPhone((e.target.value).toLowerCase())}
                                     placeholder='Search by Phone'/>
                             </span>
                         </th>
@@ -75,7 +76,7 @@ function MultiSearch() {
                                     type="text"
                                     name='email'
                                     value={searchByEmail}
-                                    onChange={(e) => setSearchByEmail(e.target.value)}
+                                    onChange={(e) => setSearchByEmail((e.target.value).toLowerCase())}
                                     placeholder='Search by Email'/>
                             </span>
                         </th>
