@@ -7,6 +7,7 @@ import './MultiSearch.css'
 let currentTimeOut;
 
 function MultiSearch() {
+    // table states
     const [users, setUsers] = useState([]);
     const [searchByName, setSearchByName] = useState("");
     const [inputValueName, setInputValueName] = useState("");
@@ -71,10 +72,22 @@ function MultiSearch() {
     const submitHandler = (e) => {
         e.preventDefault()
         setShowModal(false);
-        selectedRowValue.name = editedName;
-        selectedRowValue.username = editedUserName;
-        selectedRowValue.phone = editedPhone;
-        selectedRowValue.email = editedEmail;
+
+        if(editedName !== ''){
+            selectedRowValue.name = editedName;
+        }
+
+        if(editedUserName !== ''){
+            selectedRowValue.username = editedUserName;
+        }
+
+        if(editedPhone !== ''){
+            selectedRowValue.phone = editedPhone;
+        }
+
+        if(editedEmail !== ''){
+            selectedRowValue.email = editedEmail;
+        }
     }
 
     return (
@@ -127,7 +140,7 @@ function MultiSearch() {
                             </span>
                         </th>
                     </tr>
-                
+
                     {
                         filteredData?.map((user) => {
                             return (
@@ -150,7 +163,7 @@ function MultiSearch() {
                 setEditedUserName={setEditedUserName}
                 setEditedPhone={setEditedPhone}
                 setEditedEmail={setEditedEmail}
-                />
+            />
         </div>
     )
 }
