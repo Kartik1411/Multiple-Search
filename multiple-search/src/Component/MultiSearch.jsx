@@ -6,6 +6,7 @@ import AddNewUserModal from './AddNewUserModal';
 import './MultiSearch.css'
 
 let currentTimeOut;
+
 const initialEditedRow = {
     name: "", 
     username: "", 
@@ -24,7 +25,7 @@ const initialSearchValues = {
 function MultiSearch() {
     // table states
     const [users, setUsers] = useState([]);
-    const [inputValueName, setInputValueName] = useState("");
+    const [inputValueDebounce, setInputValueDebounce] = useState(initialSearchValues);
     const [search, setSearch] = useState(initialSearchValues);
 
     // modal states
@@ -47,11 +48,11 @@ function MultiSearch() {
         fetchData();
     },[])
 
-    const onChange = (e) => {
-        const value = e.target.value;
-        const id = e.target.id;
-        setSearch((prevState) => ({ ...prevState, [id]: value }))
-    }
+    // const onChange = (e) => {
+    //     const value = e.target.value;
+    //     const id = e.target.id;
+    //     setSearch((prevState) => ({ ...prevState, [id]: value }))
+    // }
 
     const filteredData = users?.filter((user) =>
         (!search.searchByName.toLowerCase() || user.name.toLowerCase().indexOf(search.searchByName) !== -1) &&
@@ -62,14 +63,15 @@ function MultiSearch() {
 
     const debounceOnChange = (event) => {
         const inputValue = event.target.value;
-        setInputValueName(inputValue);
+        const id = event.target.id;
+        setInputValueDebounce((prevState) => ({...prevState, [id]: inputValue}));
 
         if(currentTimeOut){
             clearTimeout(currentTimeOut);
         }
 
         currentTimeOut = setTimeout(() => {
-            setSearch((prevState) => ({...prevState, searchByName: inputValue.toLowerCase()}))
+            setSearch((prevState) => ({...prevState, [id]: inputValue.toLowerCase()}))
         }, 2000)
     }
 
@@ -128,7 +130,7 @@ function MultiSearch() {
                             <input 
                                 type="text"
                                 id="searchByName"
-                                value={inputValueName}
+                                value={inputValueDebounce.name}
                                 onChange={debounceOnChange}
                                 placeholder='Search by Name'/>
                             </span>
@@ -139,8 +141,8 @@ function MultiSearch() {
                                 <input 
                                     type="text"
                                     id="searchByUsername"
-                                    value={search.searchByUsername}
-                                    onChange={onChange}
+                                    value={inputValueDebounce.username}
+                                    onChange={debounceOnChange}
                                     placeholder='Search by Username'/>
                             </span>
                         </th>
@@ -150,8 +152,8 @@ function MultiSearch() {
                                 <input 
                                     type="text"
                                     id="searchByPhone"
-                                    value={search.searchByPhone}
-                                    onChange={onChange}
+                                    value={inputValueDebounce.phone}
+                                    onChange={debounceOnChange}
                                     placeholder='Search by Phone'/>
                             </span>
                         </th>
@@ -161,8 +163,8 @@ function MultiSearch() {
                                 <input 
                                     type="text"
                                     id="searchByEmail"
-                                    value={search.searchByEmail}
-                                    onChange={onChange}
+                                    value={inputValueDebounce.email}
+                                    onChange={debounceOnChange}
                                     placeholder='Search by Email'/>
                             </span>
                         </th>

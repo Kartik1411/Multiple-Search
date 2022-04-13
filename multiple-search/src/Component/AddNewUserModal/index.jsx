@@ -47,7 +47,6 @@ function AddNewUserModal(props) {
                                 Select Position to Add
                             </option>
                             {
-                                
                                 usersPosition.map((userPostion, key) => 
                                     <option value={userPostion} key={key}>{userPostion}</option>
                                 )
