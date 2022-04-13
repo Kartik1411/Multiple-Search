@@ -48,12 +48,6 @@ function MultiSearch() {
         fetchData();
     },[])
 
-    // const onChange = (e) => {
-    //     const value = e.target.value;
-    //     const id = e.target.id;
-    //     setSearch((prevState) => ({ ...prevState, [id]: value }))
-    // }
-
     const filteredData = users?.filter((user) =>
         (!search.searchByName.toLowerCase() || user.name.toLowerCase().indexOf(search.searchByName) !== -1) &&
         (!search.searchByUsername.toLowerCase() || user.username.toLowerCase().indexOf(search.searchByUsername) !== -1) &&
