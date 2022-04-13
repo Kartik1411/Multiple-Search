@@ -17,13 +17,13 @@ function Modal(props) {
                 <div className='modal-body'>
                     <form className='edit-form' onSubmit={props.onSubmit}>
                         <label>Name</label>
-                        <input type="text" defaultValue={props.selectedRowValue.name} onChange={(e) => props.setEditedName(e.target.value)} required="required" />
+                        <input type="text" defaultValue={props.selectedRowValue.name} onChange={(e) => props.setEditedRow((prevState) => ({ ...prevState, name: e.target.value }))} required="required" />
                         <label>Username</label>
-                        <input type="text" defaultValue={props.selectedRowValue.username} onChange={(e) => props.setEditedUserName(e.target.value)} required="required" />
+                        <input type="text" defaultValue={props.selectedRowValue.username} onChange={(e) => props.setEditedRow((prevState) => ({ ...prevState, username: e.target.value }))} required="required" />
                         <label>Phone Number</label>
-                        <input type="text" defaultValue={props.selectedRowValue.phone} onChange={(e) => props.setEditedPhone(e.target.value)} required="required" />
+                        <input type="text" defaultValue={props.selectedRowValue.phone} onChange={(e) => props.setEditedRow((prevState) => ({ ...prevState, phone: e.target.value }))} required="required" />
                         <label>Email</label>
-                        <input type="email"defaultValue={props.selectedRowValue.email} onChange={(e) => props.setEditedEmail(e.target.value)} required="required" />
+                        <input type="email"defaultValue={props.selectedRowValue.email} onChange={(e) => props.setEditedRow((prevState) => ({ ...prevState, email: e.target.value }))} required="required" />
                         <button>Submit</button>
                     </form>
                 </div>
