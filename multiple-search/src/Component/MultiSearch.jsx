@@ -9,21 +9,17 @@ let currentTimeOut;
 function MultiSearch() {
     // table states
     const [users, setUsers] = useState([]);
-    const [searchByName, setSearchByName] = useState("");
     const [inputValueName, setInputValueName] = useState("");
+    const [searchByName, setSearchByName] = useState("");
     const [searchByUsername, setSearchByUsername] = useState("");
     const [searchByPhone, setSearchByPhone] = useState("");
     const [searchByEmail, setSearchByEmail] = useState("");
-    const [selectedRowValue, setSelectedRowValue] = useState('');
+    const [selectedRowValue, setSelectedRowValue] = useState({});
 
     // modal states
     const [showModal, setShowModal] = useState(false);
 
-    // update states, lifting up states
-    const [editedName, setEditedName] = useState('');
-    const [editedUserName, setEditedUserName] = useState('');
-    const [editedPhone, setEditedPhone] = useState('');
-    const [editedEmail, setEditedEmail] = useState('');
+    const [editedRow, setEditedRow] = useState({name: "", username: "", phone: "", email: "" })
 
     const fetchData = async () => {
         await axios.get('https://jsonplaceholder.typicode.com/users')
@@ -70,25 +66,36 @@ function MultiSearch() {
     }
 
     const submitHandler = (e) => {
-        e.preventDefault()
+        e.preventDefault();
         setShowModal(false);
 
-        if(editedName !== ''){
-            selectedRowValue.name = editedName;
+        const copySelectedRow = {...selectedRowValue};
+        
+        if(editedRow.name !== ""){
+            copySelectedRow.name = editedRow.name;
         }
 
-        if(editedUserName !== ''){
-            selectedRowValue.username = editedUserName;
+        if(editedRow.username !== ""){
+            copySelectedRow.username = editedRow.username;
         }
 
-        if(editedPhone !== ''){
-            selectedRowValue.phone = editedPhone;
+        if(editedRow.phone !== ""){
+            copySelectedRow.phone = editedRow.phone;
         }
 
-        if(editedEmail !== ''){
-            selectedRowValue.email = editedEmail;
+        if(editedRow.email !== ""){
+            copySelectedRow.email = editedRow.email;
         }
+
+        console.log('copySelectedRow: ', copySelectedRow);
+
+        setUsers((prevState) => ({}))
     }
+
+    useEffect(() => {
+
+    },[selectedRowValue])
+
 
     return (
         <div className='container'>
@@ -155,15 +162,12 @@ function MultiSearch() {
                     }
                 </tbody>
             </table>
-            <Modal 
+            {showModal && <Modal 
                 selectedRowValue={selectedRowValue} 
                 show={showModal}
                 onSubmit={submitHandler}
-                setEditedName={setEditedName}
-                setEditedUserName={setEditedUserName}
-                setEditedPhone={setEditedPhone}
-                setEditedEmail={setEditedEmail}
-            />
+                setEditedRow={setEditedRow}
+            />}
         </div>
     )
 }
