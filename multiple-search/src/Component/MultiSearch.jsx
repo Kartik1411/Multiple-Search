@@ -14,12 +14,15 @@ function MultiSearch() {
     const [searchByUsername, setSearchByUsername] = useState("");
     const [searchByPhone, setSearchByPhone] = useState("");
     const [searchByEmail, setSearchByEmail] = useState("");
-    const [selectedRowValue, setSelectedRowValue] = useState({});
 
     // modal states
     const [showModal, setShowModal] = useState(false);
 
-    const [editedRow, setEditedRow] = useState({name: "", username: "", phone: "", email: "" })
+    const [editedRow, setEditedRow] = useState({
+        name: "", 
+        username: "", 
+        phone: "", 
+        email: "" })
 
     const fetchData = async () => {
         await axios.get('https://jsonplaceholder.typicode.com/users')
@@ -62,40 +65,17 @@ function MultiSearch() {
 
     const getSelectedRowValue = (user) => {
         setShowModal(true);
-        setSelectedRowValue(user)
+        setEditedRow(user)
     }
 
     const submitHandler = (e) => {
         e.preventDefault();
         setShowModal(false);
-
-        const copySelectedRow = {...selectedRowValue};
-        
-        if(editedRow.name !== ""){
-            copySelectedRow.name = editedRow.name;
-        }
-
-        if(editedRow.username !== ""){
-            copySelectedRow.username = editedRow.username;
-        }
-
-        if(editedRow.phone !== ""){
-            copySelectedRow.phone = editedRow.phone;
-        }
-
-        if(editedRow.email !== ""){
-            copySelectedRow.email = editedRow.email;
-        }
-
-        console.log('copySelectedRow: ', copySelectedRow);
-
-        setUsers((prevState) => ({}))
+        const clickedRowID = users.findIndex((user) => user.id === editedRow.id);
+        const newUsers = [...users];
+        newUsers[clickedRowID] = editedRow;
+        setUsers(newUsers)
     }
-
-    useEffect(() => {
-
-    },[selectedRowValue])
-
 
     return (
         <div className='container'>
@@ -163,10 +143,10 @@ function MultiSearch() {
                 </tbody>
             </table>
             {showModal && <Modal 
-                selectedRowValue={selectedRowValue} 
                 show={showModal}
                 onSubmit={submitHandler}
                 setEditedRow={setEditedRow}
+                editedRow={editedRow}
             />}
         </div>
     )
