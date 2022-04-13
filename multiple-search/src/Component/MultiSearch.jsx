@@ -2,28 +2,37 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import Modal from './Modal/Index';
+import AddNewUserModal from './AddNewUserModal';
 import './MultiSearch.css'
 
 let currentTimeOut;
+const initialEditedRow = {
+    name: "", 
+    username: "", 
+    phone: "", 
+    email: "" ,
+    position: ""
+}
+
+const initialSearchValues = {
+    searchByName: "",
+    searchByUsername: "",
+    searchByPhone: "",
+    searchByEmail: ""
+} 
 
 function MultiSearch() {
     // table states
     const [users, setUsers] = useState([]);
     const [inputValueName, setInputValueName] = useState("");
-    const [searchByName, setSearchByName] = useState("");
-    const [searchByUsername, setSearchByUsername] = useState("");
-    const [searchByPhone, setSearchByPhone] = useState("");
-    const [searchByEmail, setSearchByEmail] = useState("");
+    const [search, setSearch] = useState(initialSearchValues);
 
     // modal states
     const [showModal, setShowModal] = useState(false);
+    const [showAddNewUserModal, setshowAddNewUserModal] = useState(false);
 
-    const [editedRow, setEditedRow] = useState({
-        name: "", 
-        username: "", 
-        phone: "", 
-        email: "" })
-
+    const [editedRow, setEditedRow] = useState(initialEditedRow);
+        
     const fetchData = async () => {
         await axios.get('https://jsonplaceholder.typicode.com/users')
         .then((response) => {
@@ -38,11 +47,17 @@ function MultiSearch() {
         fetchData();
     },[])
 
+    const onChange = (e) => {
+        const value = e.target.value;
+        const id = e.target.id;
+        setSearch((prevState) => ({ ...prevState, [id]: value }))
+    }
+
     const filteredData = users?.filter((user) =>
-        (!searchByName.toLowerCase() || user.name.toLowerCase().indexOf(searchByName) !== -1) &&
-        (!searchByUsername.toLowerCase() || user.username.toLowerCase().indexOf(searchByUsername) !== -1) &&
-        (!searchByPhone.toLowerCase() || user.phone.toLowerCase().indexOf(searchByPhone) !== -1) && 
-        (!searchByEmail.toLowerCase() || user.email.toLowerCase().indexOf(searchByEmail) !== -1)
+        (!search.searchByName.toLowerCase() || user.name.toLowerCase().indexOf(search.searchByName) !== -1) &&
+        (!search.searchByUsername.toLowerCase() || user.username.toLowerCase().indexOf(search.searchByUsername) !== -1) &&
+        (!search.searchByPhone.toLowerCase() || user.phone.toLowerCase().indexOf(search.searchByPhone) !== -1) && 
+        (!search.searchByEmail.toLowerCase() || user.email.toLowerCase().indexOf(search.searchByEmail) !== -1)
     );
 
     const debounceOnChange = (event) => {
@@ -54,13 +69,13 @@ function MultiSearch() {
         }
 
         currentTimeOut = setTimeout(() => {
-            setSearchByName(inputValue.toLowerCase());
+            setSearch((prevState) => ({...prevState, searchByName: inputValue.toLowerCase()}))
         }, 2000)
     }
 
     useEffect(() => {
         // console.log("making search call!");
-    }, [searchByName])
+    }, [search.searchByName])
     
 
     const getSelectedRowValue = (user) => {
@@ -74,20 +89,45 @@ function MultiSearch() {
         const clickedRowID = users.findIndex((user) => user.id === editedRow.id);
         const newUsers = [...users];
         newUsers[clickedRowID] = editedRow;
+        setUsers(newUsers);
+        setEditedRow(initialEditedRow)
+    }
+
+    const addNewUserButton = () => {
+        setshowAddNewUserModal(true);
+    }
+
+    const addNewUserHandler = (e) => {
+        e.preventDefault();
+        setshowAddNewUserModal(false);
+        const newUsers = [...users];
+        newUsers.splice(editedRow.position - 1, 0, editedRow);
+
         setUsers(newUsers)
+        setEditedRow(initialEditedRow)
+    }
+
+    const cancelHandler = (e) => {
+        e.preventDefault();
+        setshowAddNewUserModal(false);
     }
 
     return (
         <div className='container'>
+            <button onClick={addNewUserButton}>Add New User</button>
+
             <table>
                 <tbody>
                     <tr>
+                        <th className='border-right'>
+                            S.No.
+                        </th>
                         <th className='border-right'>
                             Name  
                             <span style={{padding: "20px"}}>
                             <input 
                                 type="text"
-                                name='name'
+                                id="searchByName"
                                 value={inputValueName}
                                 onChange={debounceOnChange}
                                 placeholder='Search by Name'/>
@@ -98,9 +138,9 @@ function MultiSearch() {
                             <span style={{padding: "20px"}}>
                                 <input 
                                     type="text"
-                                    name='username'
-                                    value={searchByUsername}
-                                    onChange={(e) => setSearchByUsername((e.target.value).toLowerCase())}
+                                    id="searchByUsername"
+                                    value={search.searchByUsername}
+                                    onChange={onChange}
                                     placeholder='Search by Username'/>
                             </span>
                         </th>
@@ -109,9 +149,9 @@ function MultiSearch() {
                             <span style={{padding: "20px"}}>
                                 <input 
                                     type="text"
-                                    name='phone'
-                                    value={searchByPhone}
-                                    onChange={(e) => setSearchByPhone((e.target.value).toLowerCase())}
+                                    id="searchByPhone"
+                                    value={search.searchByPhone}
+                                    onChange={onChange}
                                     placeholder='Search by Phone'/>
                             </span>
                         </th>
@@ -120,18 +160,19 @@ function MultiSearch() {
                             <span style={{padding: "20px"}}>
                                 <input 
                                     type="text"
-                                    name='email'
-                                    value={searchByEmail}
-                                    onChange={(e) => setSearchByEmail((e.target.value).toLowerCase())}
+                                    id="searchByEmail"
+                                    value={search.searchByEmail}
+                                    onChange={onChange}
                                     placeholder='Search by Email'/>
                             </span>
                         </th>
                     </tr>
 
                     {
-                        filteredData?.map((user) => {
+                        filteredData?.map((user, key) => {
                             return (
-                                <tr onClick={()=> getSelectedRowValue(user)} key={user.id}>
+                                <tr onClick={()=> getSelectedRowValue(user)} key={key}>
+                                    <td className='border-right'>{key + 1}</td>
                                     <td className='border-right'>{user.name}</td>
                                     <td className='border-right'>{user.username}</td>
                                     <td className='border-right'>{user.phone}</td>
@@ -142,12 +183,29 @@ function MultiSearch() {
                     }
                 </tbody>
             </table>
-            {showModal && <Modal 
-                show={showModal}
-                onSubmit={submitHandler}
-                setEditedRow={setEditedRow}
-                editedRow={editedRow}
-            />}
+            
+
+            {
+                showAddNewUserModal && <AddNewUserModal 
+                    showAddNewUserModal={showAddNewUserModal} 
+                    onSubmit={addNewUserHandler}
+                    usersLength={users.length}
+                    setEditedRow={setEditedRow}
+                    editedRow={editedRow}   
+                    cancel={cancelHandler}
+                />
+            }
+
+            {
+                showModal && <Modal 
+                    show={showModal}
+                    onSubmit={submitHandler}
+                    setEditedRow={setEditedRow}
+                    editedRow={editedRow}   
+                />
+            }
+
+            
         </div>
     )
 }

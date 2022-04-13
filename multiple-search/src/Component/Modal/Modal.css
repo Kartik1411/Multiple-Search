@@ -38,3 +38,9 @@
 .edit-form button:hover {
     cursor: pointer;
 }
+
+.edit-form select {
+    display: block;
+    text-align: center;
+    margin: 12px auto;
+}
