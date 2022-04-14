@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext  } from 'react';
+import React, { useState, useEffect, useContext, useReducer  } from 'react';
 
 import Modal from './Modal/Index';
 import AddNewUserModal from './AddNewUserModal';
@@ -23,13 +23,28 @@ const initialSearchValues = {
     searchByEmail: ""
 } 
 
+const searchReducer = (state, action) => {
+    if(action.type === "INPUT"){
+        return{
+            ...state,
+            [action.id]: action.value
+        }
+    }
+    return state;
+} 
+
 function MultiSearch() {
 
     const [users, setUsers] = useContext(UsersContext);
 
+    const [searchValues, dispatch] = useReducer(
+        searchReducer,
+        initialSearchValues
+    )
+        
     // table states
-    const [inputValueDebounce, setInputValueDebounce] = useState(initialSearchValues);
-    const [search, setSearch] = useState(initialSearchValues);
+    // const [inputValueName, setInputValueName] = useState("");
+    // const [search, setSearch] = useState(initialSearchValues);
 
     // modal states
     const [showModal, setShowModal] = useState(false);
@@ -37,30 +52,43 @@ function MultiSearch() {
 
     const [editedRow, setEditedRow] = useState(initialEditedRow);
 
-    const filteredData = users?.filter((user) =>
-        (!search.searchByName.toLowerCase() || user.name.toLowerCase().indexOf(search.searchByName) !== -1) &&
-        (!search.searchByUsername.toLowerCase() || user.username.toLowerCase().indexOf(search.searchByUsername) !== -1) &&
-        (!search.searchByPhone.toLowerCase() || user.phone.toLowerCase().indexOf(search.searchByPhone) !== -1) && 
-        (!search.searchByEmail.toLowerCase() || user.email.toLowerCase().indexOf(search.searchByEmail) !== -1)
-    );
+    // const onChange = (e) => {
+    //     const value = e.target.value;
+    //     const id = e.target.id;
+    //     setSearch((prevState) => ({ ...prevState, [id]: value }))
+    // }
 
-    const debounceOnChange = (event) => {
-        const inputValue = event.target.value;
-        const id = event.target.id;
-        setInputValueDebounce((prevState) => ({...prevState, [id]: inputValue}));
-
-        if(currentTimeOut){
-            clearTimeout(currentTimeOut);
-        }
-
-        currentTimeOut = setTimeout(() => {
-            setSearch((prevState) => ({...prevState, [id]: inputValue.toLowerCase()}))
-        }, 2000)
+    const onChange = (e) => {
+        dispatch({
+            type: "INPUT",
+            id: e.target.id,
+            value: e.target.value
+        })
     }
 
-    useEffect(() => {
-        // console.log("making search call!");
-    }, [search.searchByName])
+    const filteredData = users?.filter((user) =>
+        (!searchValues.searchByName.toLowerCase() || user.name.toLowerCase().indexOf(searchValues.searchByName) !== -1) &&
+        (!searchValues.searchByUsername.toLowerCase() || user.username.toLowerCase().indexOf(searchValues.searchByUsername) !== -1) &&
+        (!searchValues.searchByPhone.toLowerCase() || user.phone.toLowerCase().indexOf(searchValues.searchByPhone) !== -1) && 
+        (!searchValues.searchByEmail.toLowerCase() || user.email.toLowerCase().indexOf(searchValues.searchByEmail) !== -1)
+    );
+
+    // const debounceOnChange = (event) => {
+    //     const inputValue = event.target.value;
+    //     setInputValueName(inputValue);
+
+    //     if(currentTimeOut){
+    //         clearTimeout(currentTimeOut);
+    //     }
+
+    //     currentTimeOut = setTimeout(() => {
+    //         setSearch((prevState) => ({...prevState, searchByName: inputValue.toLowerCase()}))
+    //     }, 2000)
+    // }
+
+    // useEffect(() => {
+    //     // console.log("making search call!");
+    // }, [search.searchByName])
     
 
     const getSelectedRowValue = (user) => {
@@ -113,8 +141,8 @@ function MultiSearch() {
                             <input 
                                 type="text"
                                 id="searchByName"
-                                value={inputValueDebounce.name}
-                                onChange={debounceOnChange}
+                                value={searchValues.searchByName}
+                                onChange={onChange}
                                 placeholder='Search by Name'/>
                             </span>
                         </th>
@@ -124,8 +152,8 @@ function MultiSearch() {
                                 <input 
                                     type="text"
                                     id="searchByUsername"
-                                    value={inputValueDebounce.username}
-                                    onChange={debounceOnChange}
+                                    value={searchValues.searchByUsername}
+                                    onChange={onChange}
                                     placeholder='Search by Username'/>
                             </span>
                         </th>
@@ -135,8 +163,8 @@ function MultiSearch() {
                                 <input 
                                     type="text"
                                     id="searchByPhone"
-                                    value={inputValueDebounce.phone}
-                                    onChange={debounceOnChange}
+                                    value={searchValues.searchByPhone}
+                                    onChange={onChange}
                                     placeholder='Search by Phone'/>
                             </span>
                         </th>
@@ -146,8 +174,8 @@ function MultiSearch() {
                                 <input 
                                     type="text"
                                     id="searchByEmail"
-                                    value={inputValueDebounce.email}
-                                    onChange={debounceOnChange}
+                                    value={searchValues.searchByEmail}
+                                    onChange={onChange}
                                     placeholder='Search by Email'/>
                             </span>
                         </th>
