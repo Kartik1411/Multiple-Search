@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, useContext  } from 'react';
 
 import Modal from './Modal/Index';
 import AddNewUserModal from './AddNewUserModal';
+import { UsersContext } from '../App';
+
 import './MultiSearch.css'
 
 let currentTimeOut;
@@ -23,8 +24,10 @@ const initialSearchValues = {
 } 
 
 function MultiSearch() {
+
+    const [users, setUsers] = useContext(UsersContext);
+
     // table states
-    const [users, setUsers] = useState([]);
     const [inputValueDebounce, setInputValueDebounce] = useState(initialSearchValues);
     const [search, setSearch] = useState(initialSearchValues);
 
@@ -33,20 +36,6 @@ function MultiSearch() {
     const [showAddNewUserModal, setshowAddNewUserModal] = useState(false);
 
     const [editedRow, setEditedRow] = useState(initialEditedRow);
-        
-    const fetchData = async () => {
-        await axios.get('https://jsonplaceholder.typicode.com/users')
-        .then((response) => {
-            // console.log("fetch called")
-            setUsers(response.data);
-        }).catch((err) => {
-            console.log(err);
-        })
-    }
-
-    useEffect(() => {
-        fetchData();
-    },[])
 
     const filteredData = users?.filter((user) =>
         (!search.searchByName.toLowerCase() || user.name.toLowerCase().indexOf(search.searchByName) !== -1) &&
