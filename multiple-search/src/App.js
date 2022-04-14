@@ -24,7 +24,7 @@ function App() {
   },[])
 
   return (
-    <UsersContext.Provider value={[users]}>
+    <UsersContext.Provider value={[users, setUsers]}>
       <div className="App">
         <MultiSearch />
       </div>
