@@ -13,13 +13,20 @@ function AddNewUserModal(props) {
         usersPosition[i] = i + 1;
     }
 
-    const editedRow = props.editedRow;
-    const setEditedRow = props.setEditedRow;
+    // const editedRow = props.editedRow;
+    // const setEditedRow = props.setEditedRow;
 
+    const editedRowValues = props.editedRowValues
+    const editDispatch = props.editDispatch;
+    
+    console.log('editedRowValues: ', editedRowValues);
+    
     const onChange = (e) => {
-        const value = e.target.value;
-        const id = e.target.id; 
-        setEditedRow((prevState) => ({ ...prevState, [id]: value }))
+        editDispatch({
+            type: "INPUTEDIT",
+            id: e.target.id,
+            value: e.target.value
+        })
     }
 
     
@@ -34,13 +41,13 @@ function AddNewUserModal(props) {
                     <form className='edit-form' onSubmit={props.onSubmit}>
                     <label>Name</label>
                     <label>Name</label>
-                        <input type="text" id="name" value={editedRow.name} onChange={onChange} required="required" />
+                        <input type="text" id="name" value={editedRowValues.name} onChange={onChange} required="required" />
                         <label>Username</label>
-                        <input type="text" id="username" value={editedRow.username} onChange={onChange} required="required" />
+                        <input type="text" id="username" value={editedRowValues.username} onChange={onChange} required="required" />
                         <label>Phone Number</label>
-                        <input type="text" id="phone" value={editedRow.phone} onChange={onChange} required="required" />
+                        <input type="text" id="phone" value={editedRowValues.phone} onChange={onChange} required="required" />
                         <label>Email</label>
-                        <input type="email" id="email" value={editedRow.email} onChange={onChange} required="required" />
+                        <input type="email" id="email" value={editedRowValues.email} onChange={onChange} required="required" />
 
                         <select id="position" onChange={onChange}>
                             <option>

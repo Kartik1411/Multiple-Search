@@ -33,15 +33,42 @@ const searchReducer = (state, action) => {
     return state;
 } 
 
+const editReducer = (state, action) => {
+    if(action.type === "INPUT"){
+        return{
+            ...state,
+            ...action
+        }
+    }
+    if(action.type === "INPUTEDIT"){
+        return{
+            ...state,
+            [action.id]: action.value
+        }
+    }
+    if(action.type === "SUBMIT"){
+        return{
+            ...state,
+            ...action.value
+        }
+    }
+    return state;
+} 
+
 function MultiSearch() {
 
     const [users, setUsers] = useContext(UsersContext);
 
-    const [searchValues, dispatch] = useReducer(
+    const [searchValues, searchDispatch] = useReducer(
         searchReducer,
         initialSearchValues
     )
-        
+
+    const [editedRowValues, editDispatch] = useReducer(
+        editReducer,
+        initialEditedRow
+    )
+
     // table states
     // const [inputValueName, setInputValueName] = useState("");
     // const [search, setSearch] = useState(initialSearchValues);
@@ -50,7 +77,7 @@ function MultiSearch() {
     const [showModal, setShowModal] = useState(false);
     const [showAddNewUserModal, setshowAddNewUserModal] = useState(false);
 
-    const [editedRow, setEditedRow] = useState(initialEditedRow);
+    // const [editedRow, setEditedRow] = useState(initialEditedRow);
 
     // const onChange = (e) => {
     //     const value = e.target.value;
@@ -59,7 +86,7 @@ function MultiSearch() {
     // }
 
     const onChange = (e) => {
-        dispatch({
+        searchDispatch({
             type: "INPUT",
             id: e.target.id,
             value: e.target.value
@@ -93,17 +120,27 @@ function MultiSearch() {
 
     const getSelectedRowValue = (user) => {
         setShowModal(true);
-        setEditedRow(user)
+        editDispatch({
+            type: "INPUT",
+            name: user.name, 
+            username: user.username, 
+            phone: user.phone, 
+            email: user.email,
+            id: user.id
+        })
     }
 
     const submitHandler = (e) => {
         e.preventDefault();
         setShowModal(false);
-        const clickedRowID = users.findIndex((user) => user.id === editedRow.id);
+        const clickedRowID = users.findIndex((user) => user.id === editedRowValues.id);
         const newUsers = [...users];
-        newUsers[clickedRowID] = editedRow;
+        newUsers[clickedRowID] = editedRowValues;
         setUsers(newUsers);
-        setEditedRow(initialEditedRow)
+        editDispatch({
+            type: "SUBMIT",
+            value: initialEditedRow
+        })
     }
 
     const addNewUserButton = () => {
@@ -114,10 +151,13 @@ function MultiSearch() {
         e.preventDefault();
         setshowAddNewUserModal(false);
         const newUsers = [...users];
-        newUsers.splice(editedRow.position - 1, 0, editedRow);
+        newUsers.splice(editedRowValues.position - 1, 0, editedRowValues);
 
         setUsers(newUsers)
-        setEditedRow(initialEditedRow)
+        editDispatch({
+            type: "SUBMIT",
+            value: initialEditedRow
+        })
     }
 
     const cancelHandler = (e) => {
@@ -203,8 +243,10 @@ function MultiSearch() {
                     showAddNewUserModal={showAddNewUserModal} 
                     onSubmit={addNewUserHandler}
                     usersLength={users.length}
-                    setEditedRow={setEditedRow}
-                    editedRow={editedRow}   
+                    // setEditedRow={setEditedRow}
+                    // editedRow={editedRow}   
+                    editedRowValues={editedRowValues}
+                    editDispatch={editDispatch}
                     cancel={cancelHandler}
                 />
             }
@@ -213,8 +255,10 @@ function MultiSearch() {
                 showModal && <Modal 
                     show={showModal}
                     onSubmit={submitHandler}
-                    setEditedRow={setEditedRow}
-                    editedRow={editedRow}   
+                    // setEditedRow={setEditedRow}
+                    // editedRow={editedRow}   
+                    editedRowValues={editedRowValues}
+                    editDispatch={editDispatch}
                 />
             }
 
