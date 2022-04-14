@@ -18,9 +18,7 @@ function AddNewUserModal(props) {
 
     const editedRowValues = props.editedRowValues
     const editDispatch = props.editDispatch;
-    
-    console.log('editedRowValues: ', editedRowValues);
-    
+
     const onChange = (e) => {
         editDispatch({
             type: "INPUTEDIT",

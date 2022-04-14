@@ -17,8 +17,8 @@ function Modal(props) {
     // }
 
     const editedRowValues = props.editedRowValues
-
     const editDispatch = props.editDispatch;
+
     const onChange = (e) => {
         editDispatch({
             type: "INPUTEDIT",
